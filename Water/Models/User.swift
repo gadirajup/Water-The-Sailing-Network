@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Firebase
 
 class User {
     var username: String!
@@ -28,5 +29,22 @@ class User {
         if let profileImageUrl = dictionary["profileImageUrl"] as? String {
             self.profileImageUrl = profileImageUrl
         }
+    }
+    
+    init(document: QueryDocumentSnapshot) {
+        self.uid = document.documentID
+        
+        if let username = document["username"] as? String {
+            self.username = username
+        }
+        
+        if let name = document["name"] as? String {
+            self.name = name
+        }
+        
+        if let profileImageUrl = document["profileImageUrl"] as? String {
+            self.profileImageUrl = profileImageUrl
+        }
+        
     }
 }
