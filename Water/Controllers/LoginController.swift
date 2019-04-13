@@ -56,11 +56,12 @@ class LoginController: UIViewController {
         return button
     }()
     
-    let signupButton: UIButton = {
+    let signUpButton: UIButton = {
         let button = UIButton(type: .system)
         let attributedTitle = NSMutableAttributedString(string: "Don't have an account? ", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         attributedTitle.append(NSAttributedString(string: "Sign Up", attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor(red: 17/255, green: 153/255, blue: 237/255, alpha: 1)]))
         button.setAttributedTitle(attributedTitle, for: .normal)
+        button.addTarget(self, action: #selector(handleShowSignUp), for: .touchUpInside)
         return button
     }()
     
@@ -75,9 +76,17 @@ class LoginController: UIViewController {
     fileprivate func setupView() {
         view.backgroundColor = .white
         
+        // Hide nav bar
+        
+        navigationController?.navigationBar.isHidden = true
+        
+        // Add Logo
+        
         view.addSubview(logoContainerView)
         logoContainerView.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor)
         logoContainerView.constrainHeight(constant: 150)
+        
+        // Add Login Form
         
         let stackView = UIStackView(arrangedSubviews: [emailTextField, passwordTextField, loginButton])
         stackView.axis = .vertical
@@ -87,7 +96,14 @@ class LoginController: UIViewController {
         view.addSubview(stackView)
         stackView.anchor(top: logoContainerView.bottomAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 32, left: 32, bottom: 0, right: 32))
         
-        view.addSubview(signupButton)
-        signupButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 32, bottom: 0, right: 32))
+        view.addSubview(signUpButton)
+        signUpButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 32, bottom: 0, right: 32))
+    }
+    
+    // MARK:- Handlers
+    
+    @objc fileprivate func handleShowSignUp() {
+        let signUpController = SignUpController()
+        navigationController?.pushViewController(signUpController, animated: true)
     }
 }
