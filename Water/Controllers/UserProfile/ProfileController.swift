@@ -14,6 +14,7 @@ class ProfileController: UICollectionViewController {
     // MARK: - Properties
     private let reuseIdentifier = "Cell"
     private let headerIdentifier = "Header"
+    private var user: User?
     
     // MARK: - Setup
     
@@ -45,8 +46,10 @@ class ProfileController: UICollectionViewController {
             }
 
             guard let data = snapshot?.data() else { return }
-            guard let username = data["username"] as? String else { return }
-            self.navigationItem.title = username
+            self.user = User(uid: uid, dictionary: data)
+            self.navigationItem.title = self.user?.username
+            
+            self.collectionView.reloadData()
         }
     }
     
@@ -105,6 +108,11 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! ProfileHeader
+        
+        if let user = self.user {
+            header.user = user
+        }
+        
         return header
     }
     

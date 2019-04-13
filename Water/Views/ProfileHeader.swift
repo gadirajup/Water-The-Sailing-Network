@@ -7,10 +7,21 @@
 //
 
 import UIKit
+import SDWebImage
 
 class ProfileHeader: UICollectionViewCell {
     
     // MARK: - Properties
+    
+    var user: User? {
+        didSet {
+            nameLabel.text = user!.name
+            
+            if let url = URL(string: user!.profileImageUrl) {
+                profileImageView.sd_setImage(with: url, completed: nil)
+            }
+        }
+    }
     
     // MARK: - UI Elements
     
