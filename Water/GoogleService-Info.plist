@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>276433062433-69iib269mt909so4duurctoadl3r25jk.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.276433062433-69iib269mt909so4duurctoadl3r25jk</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCIokfr82QcK-AZR0A_lP_TZ7AyK951OHg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>276433062433</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>me.prudhvi.Water</string>
+	<key>PROJECT_ID</key>
+	<string>water-e1256</string>
+	<key>STORAGE_BUCKET</key>
+	<string>water-e1256.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:276433062433:ios:8747eff882b37bb5</string>
+	<key>DATABASE_URL</key>
+	<string>https://water-e1256.firebaseio.com</string>
+</dict>
+</plist>
