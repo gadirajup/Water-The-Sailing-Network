@@ -7,11 +7,17 @@
 //
 
 import UIKit
+import Firebase
 
 private let reuseIdentifier = "Cell"
 
 class ProfileController: UICollectionViewController {
 
+    // MARK: - Properties
+    
+    
+    // MARK: - Setup
+    
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
     }
@@ -22,14 +28,33 @@ class ProfileController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
+        collectionView.backgroundColor = .orange
+        setupLogoutButton()
+        
         // Register cell classes
         self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
 
-        // Do any additional setup after loading the view.
+    }
+    
+    fileprivate func setupLogoutButton() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
+    }
+    
+    // MARK: - Handlers
+    
+    @objc fileprivate func handleLogout() {
+        let alertController = UIAlertController(title: "Logout", message: "Are You Sure?", preferredStyle: .actionSheet)
+        alertController.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (_) in
+            do {
+                try Auth.auth().signOut()
+                let loginController = LoginController()
+                self.present(loginController, animated: true, completion: nil)
+            } catch {
+                print("Failed to logout", error.localizedDescription)
+            }
+        }))
+        alertController.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        present(alertController, animated: true, completion: nil)
     }
 
     /*

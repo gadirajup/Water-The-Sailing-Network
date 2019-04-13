@@ -162,7 +162,7 @@ class LoginController: UIViewController {
             print("Successfully Logged In")
             let mainTabBarController = MainTabBarController()
             
-            self.present(mainTabBarController, animated: true, completion: nil)
+            self.dismiss(animated: true, completion: nil)
         }
     }
 }
