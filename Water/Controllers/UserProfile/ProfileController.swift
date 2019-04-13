@@ -28,6 +28,10 @@ class ProfileController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
         setupData()
         
@@ -74,7 +78,7 @@ class ProfileController: UICollectionViewController {
             do {
                 try Auth.auth().signOut()
                 let loginController = LoginController()
-                self.present(loginController, animated: true, completion: nil)
+                self.present(UINavigationController(rootViewController: loginController), animated: true, completion: nil)
             } catch {
                 print("Failed to logout", error.localizedDescription)
             }

@@ -160,7 +160,7 @@ class LoginController: UIViewController {
             }
             
             print("Successfully Logged In")
-            let mainTabBarController = MainTabBarController()
+//            let mainTabBarController = MainTabBarController()
             
             self.dismiss(animated: true, completion: nil)
         }

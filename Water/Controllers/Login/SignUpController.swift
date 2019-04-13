@@ -155,7 +155,7 @@ class SignUpController: UIViewController {
         guard let email = emailTextField.text else { return }
         guard let password = passwordTextField.text else { return }
         guard let fullName = fullNameTextField.text else { return }
-        guard let userName = userNameTextField.text else { return }
+        guard let userName = userNameTextField.text?.lowercased() else { return }
         
         // Create User
         Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
@@ -207,6 +207,7 @@ class SignUpController: UIViewController {
                         }
                         
                         print("Successfully saved to users collections")
+                        self.dismiss(animated: true, completion: nil)
                     })
                 })
             })
