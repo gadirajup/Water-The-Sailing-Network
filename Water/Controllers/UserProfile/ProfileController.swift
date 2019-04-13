@@ -14,7 +14,7 @@ class ProfileController: UICollectionViewController {
     // MARK: - Properties
     private let reuseIdentifier = "Cell"
     private let headerIdentifier = "Header"
-    private var user: User?
+    var user: User?
     
     // MARK: - Setup
     
@@ -33,10 +33,13 @@ class ProfileController: UICollectionViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        setupData()
+        // If coming from tab bar
+        if user == nil {
+            setupData()
+            setupLogoutButton()
+        }
         
         setupView()
-        setupLogoutButton()
         setupCollectionView()
     }
     
@@ -59,6 +62,8 @@ class ProfileController: UICollectionViewController {
     
     fileprivate func setupView() {
         collectionView.backgroundColor = .white
+        navigationItem.title = user?.username
+        navigationController?.navigationBar.tintColor = .black
     }
     
     fileprivate func setupCollectionView() {
@@ -67,7 +72,7 @@ class ProfileController: UICollectionViewController {
     }
     
     fileprivate func setupLogoutButton() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
     }
     
     // MARK: - Handlers

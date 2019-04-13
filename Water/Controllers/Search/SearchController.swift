@@ -80,6 +80,9 @@ extension SearchController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let user = users[indexPath.row]
+        let profileController = ProfileController()
+        profileController.user = user
+        navigationController?.pushViewController(profileController, animated: true)
         
     }
 }

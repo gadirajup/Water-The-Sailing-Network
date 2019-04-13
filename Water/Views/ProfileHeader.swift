@@ -8,6 +8,7 @@
 
 import UIKit
 import SDWebImage
+import Firebase
 
 class ProfileHeader: UICollectionViewCell {
     
@@ -15,6 +16,9 @@ class ProfileHeader: UICollectionViewCell {
     
     var user: User? {
         didSet {
+            
+            configureEditButton()
+            
             nameLabel.text = user!.name
             
             if let url = URL(string: user!.profileImageUrl) {
@@ -114,7 +118,7 @@ class ProfileHeader: UICollectionViewCell {
     
     let editProfileButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Edit Profile", for: .normal)
+        button.setTitle("Loading", for: .normal)
         button.layer.cornerRadius = 5
         button.layer.borderColor = UIColor.lightGray.cgColor
         button.layer.borderWidth = 0.5
@@ -208,6 +212,20 @@ class ProfileHeader: UICollectionViewCell {
         topDividerView.anchor(top: nil, leading: leadingAnchor, bottom: stackView.topAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 8, right: 0))
         topDividerView.constrainHeight(constant: 0.5)
         
+    }
+    
+    func configureEditButton() {
+        guard let currentUID = Auth.auth().currentUser?.uid else { return }
+        
+        if currentUID == user?.uid {
+            //edit profile
+            editProfileButton.setTitle("Edit Profile", for: .normal)
+        } else  {
+            // follow
+            editProfileButton.setTitle("Follow", for: .normal)
+            editProfileButton.setTitleColor(.white, for: .normal)
+            editProfileButton.backgroundColor = UIColor(red: 17/255, green: 154/255, blue: 237/255, alpha: 1)
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
