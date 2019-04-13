@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class LoginController: UIViewController {
 
@@ -33,6 +34,7 @@ class LoginController: UIViewController {
         tf.borderStyle = .roundedRect
         tf.font = UIFont.systemFont(ofSize: 18)
         tf.constrainHeight(constant: 48)
+        tf.addTarget(self, action: #selector(formValidation), for: .editingChanged)
         return tf
     }()
     
@@ -44,6 +46,7 @@ class LoginController: UIViewController {
         tf.font = UIFont.systemFont(ofSize: 18)
         tf.constrainHeight(constant: 48)
         tf.isSecureTextEntry = true
+        tf.addTarget(self, action: #selector(formValidation), for: .editingChanged)
         return tf
     }()
     
@@ -54,6 +57,8 @@ class LoginController: UIViewController {
         button.backgroundColor = UIColor(red: 149/255, green: 204/255, blue: 244/255, alpha: 1)
         button.layer.cornerRadius = 5
         button.constrainHeight(constant: 48)
+        button.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
+        button.isEnabled = false
         return button
     }()
     
@@ -72,6 +77,8 @@ class LoginController: UIViewController {
         super.viewDidLoad()
 
         setupView()
+        setupGestures()
+        //setupObservers()
     }
     
     fileprivate func setupView() {
@@ -101,10 +108,61 @@ class LoginController: UIViewController {
         signUpButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 32, bottom: 0, right: 32))
     }
     
+    fileprivate func setupGestures() {
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleKeyboardHide)))
+    }
+    
+    fileprivate func setupObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+    }
+    
     // MARK:- Handlers
+    
+    @objc fileprivate func formValidation() {
+        guard
+            emailTextField.hasText,
+            passwordTextField.hasText
+            else {
+                loginButton.isEnabled = false
+                loginButton.backgroundColor = UIColor(red: 149/255, green: 204/255, blue: 244/255, alpha: 1)
+                return
+        }
+        
+        loginButton.isEnabled = true
+        loginButton.backgroundColor = UIColor(red: 17/255, green: 154/255, blue: 237/255, alpha: 1)
+    }
     
     @objc fileprivate func handleShowSignUp() {
         let signUpController = SignUpController()
         navigationController?.pushViewController(signUpController, animated: true)
+    }
+    
+    @objc fileprivate func handleKeyboardHide() {
+        view.endEditing(true)
+    }
+    
+    @objc fileprivate func handleKeyboardShow(notification: NSNotification) {
+        guard let info = notification.userInfo else { return }
+        let keyboardInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue
+        let keyboardFrame = keyboardInfo.cgRectValue
+        
+        print(keyboardFrame.height)
+    }
+    
+    @objc fileprivate func handleLogin() {
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        
+        Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
+            if let error = error {
+                print("Failed to login user", error.localizedDescription)
+                return
+            }
+            
+            print("Successfully Logged In")
+            let mainTabBarController = MainTabBarController()
+            
+            self.present(mainTabBarController, animated: true, completion: nil)
+        }
     }
 }

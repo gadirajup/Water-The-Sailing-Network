@@ -96,6 +96,7 @@ class SignUpController: UIViewController {
         super.viewDidLoad()
         
         setupView()
+        setupGestures()
     }
     
     fileprivate func setupView() {
@@ -121,6 +122,10 @@ class SignUpController: UIViewController {
         
         view.addSubview(loginButton)
         loginButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 32, bottom: 0, right: 32))
+    }
+    
+    fileprivate func setupGestures() {
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleKeyboardHide)))
     }
     
     // MARK:- Handlers
@@ -214,6 +219,10 @@ class SignUpController: UIViewController {
         imagePicker.delegate = self
         imagePicker.allowsEditing = true
         present(imagePicker, animated: true, completion: nil)
+    }
+    
+    @objc fileprivate func handleKeyboardHide() {
+        view.endEditing(true)
     }
 }
 
