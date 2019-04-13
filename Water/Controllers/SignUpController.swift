@@ -11,11 +11,16 @@ import Firebase
 
 class SignUpController: UIViewController {
     
+    // MARK:- Properties
+    
+    var imageSelected = false
+    
     // MARK:- UI Elements
     
     let addPhotoButton: UIButton = {
         let button = UIButton()
         button.setImage(#imageLiteral(resourceName: "plus_photo").withRenderingMode(.alwaysOriginal), for: .normal)
+        button.addTarget(self, action: #selector(handleSelectProfilePhoto), for: .touchUpInside)
         return button
     }()
     
@@ -37,6 +42,7 @@ class SignUpController: UIViewController {
         tf.borderStyle = .roundedRect
         tf.font = UIFont.systemFont(ofSize: 18)
         tf.constrainHeight(constant: 48)
+        tf.addTarget(self, action: #selector(formValidation), for: .editingChanged)
         return tf
     }()
     
@@ -47,6 +53,7 @@ class SignUpController: UIViewController {
         tf.borderStyle = .roundedRect
         tf.font = UIFont.systemFont(ofSize: 18)
         tf.constrainHeight(constant: 48)
+        tf.addTarget(self, action: #selector(formValidation), for: .editingChanged)
         return tf
     }()
     
@@ -125,7 +132,10 @@ class SignUpController: UIViewController {
     @objc fileprivate func formValidation() {
         guard
             emailTextField.hasText,
-            passwordTextField.hasText
+            passwordTextField.hasText,
+            fullNameTextField.hasText,
+            userNameTextField.hasText,
+            imageSelected == true
         else {
             signUpButton.isEnabled = false
             signUpButton.backgroundColor = UIColor(red: 149/255, green: 204/255, blue: 244/255, alpha: 1)
@@ -139,14 +149,91 @@ class SignUpController: UIViewController {
     @objc fileprivate func handleSignUp() {
         guard let email = emailTextField.text else { return }
         guard let password = passwordTextField.text else { return }
+        guard let fullName = fullNameTextField.text else { return }
+        guard let userName = userNameTextField.text else { return }
         
+        // Create User
         Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
+            // Handle any User Erro
             if let error = error {
                 print("Failed to Create User: ", error.localizedDescription)
                 return
             }
             
             print("Successfully Created User")
+            
+            // Get profile image as data
+            guard let profileImage = self.addPhotoButton.imageView?.image else { return }
+            guard let imageData = profileImage.jpegData(compressionQuality: 0.5) else { return }
+            
+            // Save Profile Image Data in Storage
+            let fileName = UUID().uuidString
+            Storage.storage().reference(withPath: fileName).putData(imageData, metadata: nil, completion: { (metadata, error) in
+                if let error = error {
+                    print("Failed to upload image to firebase storage", error.localizedDescription)
+                    return
+                }
+                
+                // Get location of saved image data as URL
+                Storage.storage().reference(withPath: fileName).downloadURL(completion: { (url, error) in
+                    if let error = error {
+                        print("Failed to download url of image", error.localizedDescription)
+                        return
+                    }
+                    
+                    // Make sure url exists
+                    guard let url = url else { return }
+                    
+                    // get string version of url to be saved
+                    let profileImageUrl = url.absoluteString
+                    
+                    // All the data to be stored in database with saved image url
+                    let dictionaryValues = [
+                        "name": fullName,
+                        "username": userName,
+                        "profileImageUrl": profileImageUrl
+                    ]
+                    
+                    // save user data with document id as user id
+                    guard let uid = user?.user.uid else { return }
+                    Firestore.firestore().collection("users").document(uid).setData(dictionaryValues, completion: { (error) in
+                        if let error = error {
+                            print("Failed to upload user information", error.localizedDescription)
+                        }
+                        
+                        print("Successfully saved to users collections")
+                    })
+                })
+            })
+            
         }
+    }
+    
+    @objc fileprivate func handleSelectProfilePhoto() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
+        present(imagePicker, animated: true, completion: nil)
+    }
+}
+
+// MARK :- Image Picker
+extension SignUpController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        guard let profileImage = info[UIImagePickerController.InfoKey.editedImage]  as? UIImage else {
+            imageSelected = false
+            return
+        }
+        
+        addPhotoButton.layer.cornerRadius = addPhotoButton.frame.width/2
+        addPhotoButton.layer.masksToBounds = true
+        addPhotoButton.layer.borderColor = UIColor.black.cgColor
+        addPhotoButton.layer.borderWidth = 1
+        addPhotoButton.setImage(profileImage.withRenderingMode(.alwaysOriginal), for: .normal)
+        imageSelected = true
+        
+        formValidation()
+        dismiss(animated: true, completion: nil)
     }
 }
