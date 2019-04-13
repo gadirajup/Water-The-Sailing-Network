@@ -116,7 +116,7 @@ class ProfileHeader: UICollectionViewCell {
         return label
     }()
     
-    let editProfileButton: UIButton = {
+    lazy var editProfileButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Loading", for: .normal)
         button.layer.cornerRadius = 5
@@ -124,6 +124,8 @@ class ProfileHeader: UICollectionViewCell {
         button.layer.borderWidth = 0.5
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         button.setTitleColor(.black, for: .normal)
+        button.isEnabled = true
+        button.addTarget(self, action: #selector(handleEditFollow), for: .touchUpInside)
         return button
     }()
     
@@ -226,6 +228,32 @@ class ProfileHeader: UICollectionViewCell {
             editProfileButton.setTitleColor(.white, for: .normal)
             editProfileButton.backgroundColor = UIColor(red: 17/255, green: 154/255, blue: 237/255, alpha: 1)
         }
+    }
+    
+    @objc fileprivate func handleEditFollow() {
+        if editProfileButton.title(for: .normal) == "Edit Profile" {
+            print("Edit")
+        } else if editProfileButton.title(for: .normal) == "Follow" {
+            editProfileButton.setTitle("Following", for: .normal)
+            handleFollow()
+        } else if editProfileButton.title(for: .normal) == "Following" {
+            editProfileButton.setTitle("Follow", for: .normal)
+            handleUnfollow()
+        }
+    }
+    
+    fileprivate func handleFollow() {
+        guard let currentUID = Auth.auth().currentUser?.uid else { return }
+        guard let followingUID = user?.uid else { return }
+        Firestore.firestore().collection("users-following").document(currentUID).setData([followingUID: 1])
+        Firestore.firestore().collection("users-followers").document(followingUID).setData([currentUID: 1])
+    }
+    
+    fileprivate func handleUnfollow() {
+        guard let currentUID = Auth.auth().currentUser?.uid else { return }
+        guard let followingUID = user?.uid else { return }
+        Firestore.firestore().collection("users-following").document(currentUID).setData([followingUID: 0])
+        Firestore.firestore().collection("users-followers").document(followingUID).setData([currentUID: 0])
     }
     
     required init?(coder aDecoder: NSCoder) {
