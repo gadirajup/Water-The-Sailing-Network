@@ -9,12 +9,11 @@
 import UIKit
 import Firebase
 
-private let reuseIdentifier = "Cell"
-
 class ProfileController: UICollectionViewController {
 
     // MARK: - Properties
-    
+    private let reuseIdentifier = "Cell"
+    private let headerIdentifier = "Header"
     
     // MARK: - Setup
     
@@ -52,11 +51,12 @@ class ProfileController: UICollectionViewController {
     }
     
     fileprivate func setupView() {
-        collectionView.backgroundColor = .orange
+        collectionView.backgroundColor = .white
     }
     
     fileprivate func setupCollectionView() {
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView.register(ProfileHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerIdentifier)
     }
     
     fileprivate func setupLogoutButton() {
@@ -83,16 +83,16 @@ class ProfileController: UICollectionViewController {
 
 // MARK: - UICollectionView
 
-extension ProfileController {
+extension ProfileController: UICollectionViewDelegateFlowLayout {
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
     
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return 0
+        return 1
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -101,5 +101,14 @@ extension ProfileController {
         // Configure the cell
         
         return cell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! ProfileHeader
+        return header
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return .init(width: view.frame.width, height: 180)
     }
 }
