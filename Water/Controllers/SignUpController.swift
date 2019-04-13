@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class SignUpController: UIViewController {
     
@@ -25,6 +26,7 @@ class SignUpController: UIViewController {
         tf.borderStyle = .roundedRect
         tf.font = UIFont.systemFont(ofSize: 18)
         tf.constrainHeight(constant: 48)
+        tf.addTarget(self, action: #selector(formValidation), for: .editingChanged)
         return tf
     }()
     
@@ -55,6 +57,8 @@ class SignUpController: UIViewController {
         tf.borderStyle = .roundedRect
         tf.font = UIFont.systemFont(ofSize: 18)
         tf.constrainHeight(constant: 48)
+        tf.addTarget(self, action: #selector(formValidation), for: .editingChanged)
+        tf.isSecureTextEntry = true
         return tf
     }()
     
@@ -65,6 +69,8 @@ class SignUpController: UIViewController {
         button.backgroundColor = UIColor(red: 149/255, green: 204/255, blue: 244/255, alpha: 1)
         button.layer.cornerRadius = 5
         button.constrainHeight(constant: 48)
+        button.addTarget(self, action: #selector(handleSignUp), for: .touchUpInside)
+        button.isEnabled = false
         return button
     }()
     
@@ -114,5 +120,33 @@ class SignUpController: UIViewController {
     
     @objc fileprivate func handleShowLogin() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc fileprivate func formValidation() {
+        guard
+            emailTextField.hasText,
+            passwordTextField.hasText
+        else {
+            signUpButton.isEnabled = false
+            signUpButton.backgroundColor = UIColor(red: 149/255, green: 204/255, blue: 244/255, alpha: 1)
+            return
+        }
+        
+        signUpButton.isEnabled = true
+        signUpButton.backgroundColor = UIColor(red: 17/255, green: 154/255, blue: 237/255, alpha: 1)
+    }
+    
+    @objc fileprivate func handleSignUp() {
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        
+        Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
+            if let error = error {
+                print("Failed to Create User: ", error.localizedDescription)
+                return
+            }
+            
+            print("Successfully Created User")
+        }
     }
 }

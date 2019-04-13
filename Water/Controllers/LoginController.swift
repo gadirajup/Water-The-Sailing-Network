@@ -43,6 +43,7 @@ class LoginController: UIViewController {
         tf.borderStyle = .roundedRect
         tf.font = UIFont.systemFont(ofSize: 18)
         tf.constrainHeight(constant: 48)
+        tf.isSecureTextEntry = true
         return tf
     }()
     
