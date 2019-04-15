@@ -12,6 +12,22 @@ import Firebase
 class Fire {
     static let fire = Fire()
     
+    func follow(selectedUser: User, for currentUser: String) {
+        let currentUID = currentUser
+        guard let selectedUID = selectedUser.uid else { return }
+        
+        USERS_FOLLOWING_REF.document(currentUID).setData([selectedUID: 1], merge: true)
+        USERS_FOLLOWERS_REF.document(selectedUID).setData([currentUID: 1], merge: true)
+    }
+    
+    func unfollow(selectedUser: User, for currentUser: String) {
+        let currentUID = currentUser
+        guard let selectedUID = selectedUser.uid else { return }
+        
+        USERS_FOLLOWING_REF.document(currentUID).updateData([selectedUID: FieldValue.delete()])
+        USERS_FOLLOWERS_REF.document(selectedUID).updateData([currentUID: FieldValue.delete()])
+    }
+    
     func getFollowersForUser(withUID uid: String, completion: @escaping ([String]) -> ()) {
         USERS_FOLLOWERS_REF.document(uid).getDocument { (snapshot, error) in
             if let error = error {

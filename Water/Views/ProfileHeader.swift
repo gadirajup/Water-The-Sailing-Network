@@ -234,17 +234,11 @@ class ProfileHeader: UICollectionViewCell {
     }
     
     fileprivate func handleFollow() {
-        guard let currentUID = Auth.auth().currentUser?.uid else { return }
-        guard let followingUID = selectedUser?.uid else { return }
-        Firestore.firestore().collection("users-following").document(currentUID).setData([followingUID: 1], merge: true)
-        Firestore.firestore().collection("users-followers").document(followingUID).setData([currentUID: 1], merge: true)
+        Fire.fire.follow(selectedUser: selectedUser!, for: currentUser!)
     }
     
     fileprivate func handleUnfollow() {
-        guard let currentUID = Auth.auth().currentUser?.uid else { return }
-        guard let followingUID = selectedUser?.uid else { return }
-        Firestore.firestore().collection("users-following").document(currentUID).updateData([followingUID: FieldValue.delete()])
-        Firestore.firestore().collection("users-following").document(followingUID).updateData([currentUID: FieldValue.delete()])
+        Fire.fire.unfollow(selectedUser: selectedUser!, for: currentUser!)
     }
     
     // MARK: - Logic Functions

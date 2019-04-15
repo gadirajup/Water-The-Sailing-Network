@@ -4,7 +4,6 @@
 //
 //  Created by Prudhvi Gadiraju on 4/12/19.
 //  Copyright © 2019 Prudhvi Gadiraju. All rights reserved.
-//
 
 import UIKit
 import Firebase
@@ -97,21 +96,16 @@ class ProfileController: UICollectionViewController {
 
 extension ProfileController: UICollectionViewDelegateFlowLayout {
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
         return 1
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-        
-        // Configure the cell
-        
         return cell
     }
     
