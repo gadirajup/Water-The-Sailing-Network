@@ -13,11 +13,12 @@ import Firebase
 class ProfileHeader: UICollectionViewCell {
     
     // MARK: - Properties
-    
+    var doesFollow = false
     var user: User? {
         didSet {
             
-            configureEditButton()
+            checkIfFollows()
+            //configureEditButton()
             
             nameLabel.text = user!.name
             
@@ -223,10 +224,18 @@ class ProfileHeader: UICollectionViewCell {
             //edit profile
             editProfileButton.setTitle("Edit Profile", for: .normal)
         } else  {
-            // follow
-            editProfileButton.setTitle("Follow", for: .normal)
-            editProfileButton.setTitleColor(.white, for: .normal)
-            editProfileButton.backgroundColor = UIColor(red: 17/255, green: 154/255, blue: 237/255, alpha: 1)
+            if doesFollow == true {
+                // follow
+                editProfileButton.setTitle("Following", for: .normal)
+                editProfileButton.setTitleColor(.white, for: .normal)
+                editProfileButton.backgroundColor = UIColor(red: 17/255, green: 154/255, blue: 237/255, alpha: 1)
+            } else {
+                // unfollow
+                editProfileButton.setTitle("Follow", for: .normal)
+                editProfileButton.setTitleColor(.white, for: .normal)
+                editProfileButton.backgroundColor = UIColor(red: 17/255, green: 154/255, blue: 237/255, alpha: 1)
+            }
+
         }
     }
     
@@ -245,16 +254,41 @@ class ProfileHeader: UICollectionViewCell {
     fileprivate func handleFollow() {
         guard let currentUID = Auth.auth().currentUser?.uid else { return }
         guard let followingUID = user?.uid else { return }
-        Firestore.firestore().collection("users-following").document(currentUID).setData([followingUID: 1])
-        Firestore.firestore().collection("users-followers").document(followingUID).setData([currentUID: 1])
+        Firestore.firestore().collection("users-following").document(currentUID).setData([followingUID: 1], merge: true)
+        Firestore.firestore().collection("users-followers").document(followingUID).setData([currentUID: 1], merge: true)
     }
     
     fileprivate func handleUnfollow() {
         guard let currentUID = Auth.auth().currentUser?.uid else { return }
         guard let followingUID = user?.uid else { return }
-        Firestore.firestore().collection("users-following").document(currentUID).setData([followingUID: 0])
-        Firestore.firestore().collection("users-followers").document(followingUID).setData([currentUID: 0])
+        Firestore.firestore().collection("users-following").document(currentUID).updateData([followingUID: FieldValue.delete()])
+        Firestore.firestore().collection("users-following").document(followingUID).updateData([currentUID: FieldValue.delete()])
+
+//        Firestore.firestore().collection("users-following").document(currentUID).setData([followingUID: 0], merge: true)
+//        Firestore.firestore().collection("users-followers").document(followingUID).setData([currentUID: 0], merge: true)
+        
     }
+    
+    fileprivate func checkIfFollows() {
+        guard let currentUID = Auth.auth().currentUser?.uid else { return }
+        Firestore.firestore().collection("users-following").document(currentUID).getDocument { (snapshot, error) in
+            if let error = error {
+                print("Failed to get users following collection", error.localizedDescription)
+                return
+            }
+            
+            guard let following = snapshot?.data() else { return }
+            if following.keys.contains(self.user!.uid) {
+                self.doesFollow = true
+            } else {
+                self.doesFollow = false
+            }
+            
+            self.configureEditButton()
+        }
+    }
+    
+    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

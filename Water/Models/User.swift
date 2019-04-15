@@ -14,6 +14,7 @@ class User {
     var name: String!
     var profileImageUrl: String!
     var uid: String!
+    var isFollowed = false
     
     init(uid: String, dictionary: [String: Any]) {
         self.uid = uid
@@ -45,6 +46,5 @@ class User {
         if let profileImageUrl = document["profileImageUrl"] as? String {
             self.profileImageUrl = profileImageUrl
         }
-        
     }
 }
