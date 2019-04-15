@@ -13,18 +13,17 @@ import Firebase
 class ProfileHeader: UICollectionViewCell {
     
     // MARK: - Properties
-    var doesFollow = false
-    var user: User? {
+    let currentUser = Auth.auth().currentUser?.uid
+    var selectedUser: User? {
         didSet {
-            
+            // Check if current user already follows selected user and change follow button accordingly
             checkIfFollows()
-            //configureEditButton()
             
-            nameLabel.text = user!.name
-            
-            if let url = URL(string: user!.profileImageUrl) {
-                profileImageView.sd_setImage(with: url, completed: nil)
-            }
+            // Update user data (followers, following, posts)
+            updateSelectedUserData()
+
+            // Update User Information (name label, profile image)
+            updateUserInfo()
         }
     }
     
@@ -52,22 +51,7 @@ class ProfileHeader: UICollectionViewCell {
         let label = UILabel()
         label.numberOfLines = 0
         label.textAlignment = .center
-        
-        let attributedString = NSMutableAttributedString(
-            string: "5\n",
-            attributes: [
-                NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)
-            ])
-        
-        attributedString.append(NSAttributedString(
-            string: "posts",
-            attributes: [
-                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
-                NSAttributedString.Key.foregroundColor: UIColor.lightGray
-            ]))
-        
-        label.attributedText = attributedString
-        
+        label.setAttributedText(with: "0", and: "posts")
         return label
     }()
     
@@ -75,22 +59,7 @@ class ProfileHeader: UICollectionViewCell {
         let label = UILabel()
         label.numberOfLines = 0
         label.textAlignment = .center
-        
-        let attributedString = NSMutableAttributedString(
-            string: "5\n",
-            attributes: [
-                NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)
-            ])
-        
-        attributedString.append(NSAttributedString(
-            string: "followers",
-            attributes: [
-                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
-                NSAttributedString.Key.foregroundColor: UIColor.lightGray
-            ]))
-        
-        label.attributedText = attributedString
-        
+        label.setAttributedText(with: "0", and: "followers")
         return label
     }()
     
@@ -98,22 +67,7 @@ class ProfileHeader: UICollectionViewCell {
         let label = UILabel()
         label.numberOfLines = 0
         label.textAlignment = .center
-        
-        let attributedString = NSMutableAttributedString(
-            string: "5\n",
-            attributes: [
-                NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)
-            ])
-        
-        attributedString.append(NSAttributedString(
-            string: "following",
-            attributes: [
-                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
-                NSAttributedString.Key.foregroundColor: UIColor.lightGray
-            ]))
-        
-        label.attributedText = attributedString
-        
+        label.setAttributedText(with: "0", and: "following")
         return label
     }()
     
@@ -153,12 +107,15 @@ class ProfileHeader: UICollectionViewCell {
         setupView()
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     fileprivate func setupView() {
         setupProfileImage()
-        //setupNameLabel()
-        setupStats()
+        setupStatsUI()
         setupEditButton()
-        setupBottom()
+        setupBottomControls()
     }
     
     fileprivate func setupProfileImage() {
@@ -173,7 +130,7 @@ class ProfileHeader: UICollectionViewCell {
         nameLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 16).isActive = true
     }
     
-    fileprivate func setupStats() {
+    fileprivate func setupStatsUI() {
         let stackView = UIStackView(arrangedSubviews: [postsLabel, followersLabel, followingLabel])
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
@@ -191,7 +148,7 @@ class ProfileHeader: UICollectionViewCell {
         editProfileButton.constrainHeight(constant: 30)
     }
     
-    fileprivate func setupBottom() {
+    fileprivate func setupBottomControls() {
         
         let botDividerView = UIView()
         botDividerView.backgroundColor = .lightGray
@@ -217,14 +174,16 @@ class ProfileHeader: UICollectionViewCell {
         
     }
     
-    func configureEditButton() {
+    // MARK: - Update Functions
+    
+    func updateEditButton(isFollowing: Bool) {
         guard let currentUID = Auth.auth().currentUser?.uid else { return }
         
-        if currentUID == user?.uid {
+        if currentUID == selectedUser?.uid {
             //edit profile
             editProfileButton.setTitle("Edit Profile", for: .normal)
         } else  {
-            if doesFollow == true {
+            if isFollowing == true {
                 // follow
                 editProfileButton.setTitle("Following", for: .normal)
                 editProfileButton.setTitleColor(.white, for: .normal)
@@ -238,6 +197,29 @@ class ProfileHeader: UICollectionViewCell {
 
         }
     }
+    
+    func updateUserInfo() {
+        nameLabel.text = selectedUser!.name
+        
+        if let url = URL(string: selectedUser!.profileImageUrl) {
+            profileImageView.sd_setImage(with: url, completed: nil)
+        }
+    }
+    
+    func updateSelectedUserData() {
+        
+        // Update Followers Text Label
+        Fire.fire.getFollowersForUser(withUID: selectedUser!.uid) { [weak self] (followers) in
+            self?.followersLabel.setAttributedText(with: String(followers.count), and: "followers")
+        }
+        
+        // Update Followers Text Label
+        Fire.fire.getFollowingForUser(withUID: selectedUser!.uid) { [weak self] (following) in
+            self?.followingLabel.setAttributedText(with: String(following.count), and: "following")
+        }
+    }
+    
+    // MARK: - Handle Functions
     
     @objc fileprivate func handleEditFollow() {
         if editProfileButton.title(for: .normal) == "Edit Profile" {
@@ -253,45 +235,23 @@ class ProfileHeader: UICollectionViewCell {
     
     fileprivate func handleFollow() {
         guard let currentUID = Auth.auth().currentUser?.uid else { return }
-        guard let followingUID = user?.uid else { return }
+        guard let followingUID = selectedUser?.uid else { return }
         Firestore.firestore().collection("users-following").document(currentUID).setData([followingUID: 1], merge: true)
         Firestore.firestore().collection("users-followers").document(followingUID).setData([currentUID: 1], merge: true)
     }
     
     fileprivate func handleUnfollow() {
         guard let currentUID = Auth.auth().currentUser?.uid else { return }
-        guard let followingUID = user?.uid else { return }
+        guard let followingUID = selectedUser?.uid else { return }
         Firestore.firestore().collection("users-following").document(currentUID).updateData([followingUID: FieldValue.delete()])
         Firestore.firestore().collection("users-following").document(followingUID).updateData([currentUID: FieldValue.delete()])
-
-//        Firestore.firestore().collection("users-following").document(currentUID).setData([followingUID: 0], merge: true)
-//        Firestore.firestore().collection("users-followers").document(followingUID).setData([currentUID: 0], merge: true)
-        
     }
+    
+    // MARK: - Logic Functions
     
     fileprivate func checkIfFollows() {
-        guard let currentUID = Auth.auth().currentUser?.uid else { return }
-        Firestore.firestore().collection("users-following").document(currentUID).getDocument { (snapshot, error) in
-            if let error = error {
-                print("Failed to get users following collection", error.localizedDescription)
-                return
-            }
-            
-            guard let following = snapshot?.data() else { return }
-            if following.keys.contains(self.user!.uid) {
-                self.doesFollow = true
-            } else {
-                self.doesFollow = false
-            }
-            
-            self.configureEditButton()
+        Fire.fire.checkIf(currentUserUID: currentUser!, follows: selectedUser!) { (isFollowing) in
+            self.updateEditButton(isFollowing: isFollowing)
         }
     }
-    
-    
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
 }

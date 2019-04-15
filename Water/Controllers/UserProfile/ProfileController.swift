@@ -119,7 +119,7 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! ProfileHeader
         
         if let user = self.user {
-            header.user = user
+            header.selectedUser = user
         }
         
         return header

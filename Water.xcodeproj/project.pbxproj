@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A4880DA92265367A00C06FB5 /* Fire.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4880DA82265367A00C06FB5 /* Fire.swift */; };
+		A4880DAB226536A000C06FB5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4880DAA226536A000C06FB5 /* Constants.swift */; };
+		A4880DAD22653E5300C06FB5 /* UILabel+AttrText.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4880DAC22653E5300C06FB5 /* UILabel+AttrText.swift */; };
 		A4BFC6982261732100E98BA1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4BFC6972261732100E98BA1 /* AppDelegate.swift */; };
 		A4BFC69D2261732100E98BA1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4BFC69B2261732100E98BA1 /* Main.storyboard */; };
 		A4BFC69F2261732300E98BA1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4BFC69E2261732300E98BA1 /* Assets.xcassets */; };
@@ -30,6 +33,9 @@
 
 /* Begin PBXFileReference section */
 		0A708D831A31D268C5538407 /* Pods_Water.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Water.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4880DA82265367A00C06FB5 /* Fire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fire.swift; sourceTree = "<group>"; };
+		A4880DAA226536A000C06FB5 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		A4880DAC22653E5300C06FB5 /* UILabel+AttrText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+AttrText.swift"; sourceTree = "<group>"; };
 		A4BFC6942261732100E98BA1 /* Water.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Water.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4BFC6972261732100E98BA1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A4BFC69C2261732100E98BA1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -81,6 +87,14 @@
 				0A708D831A31D268C5538407 /* Pods_Water.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A4880DA72265366400C06FB5 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				A4880DA82265367A00C06FB5 /* Fire.swift */,
+			);
+			path = Networking;
 			sourceTree = "<group>";
 		};
 		A4BFC68B2261732100E98BA1 = {
@@ -151,6 +165,8 @@
 		A4BFC6AC2261737F00E98BA1 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				A4880DAA226536A000C06FB5 /* Constants.swift */,
+				A4880DA72265366400C06FB5 /* Networking */,
 				A4BFC6B1226174EC00E98BA1 /* Extensions */,
 			);
 			path = Services;
@@ -161,6 +177,7 @@
 			children = (
 				A4BFC6AF226174E300E98BA1 /* UIView+Layout.swift */,
 				A4BFC6CC2262451B00E98BA1 /* UIImageView+Load.swift */,
+				A4880DAC22653E5300C06FB5 /* UILabel+AttrText.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -352,12 +369,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4880DAD22653E5300C06FB5 /* UILabel+AttrText.swift in Sources */,
+				A4880DA92265367A00C06FB5 /* Fire.swift in Sources */,
 				A4BFC6CF22624C5E00E98BA1 /* SearchUserCell.swift in Sources */,
 				A4BFC6982261732100E98BA1 /* AppDelegate.swift in Sources */,
 				A4BFC6BD2261A23800E98BA1 /* PostController.swift in Sources */,
 				A4BFC6CD2262451B00E98BA1 /* UIImageView+Load.swift in Sources */,
 				A4BFC6B92261A1FB00E98BA1 /* FeedController.swift in Sources */,
 				A4BFC6AE226173A000E98BA1 /* LoginController.swift in Sources */,
+				A4880DAB226536A000C06FB5 /* Constants.swift in Sources */,
 				A4BFC6BB2261A21200E98BA1 /* SearchController.swift in Sources */,
 				A4BFC6C12261A26500E98BA1 /* ProfileController.swift in Sources */,
 				A4BFC6B722619FBE00E98BA1 /* MainTabBarController.swift in Sources */,
